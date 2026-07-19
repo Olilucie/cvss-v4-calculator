@@ -1,53 +1,63 @@
 /*
 Identité visuelle personnalisée — Calculateur CVSS v4.0 (FR)
 Base légale d'origine : Copyright FIRST, Red Hat, and contributors — SPDX-License-Identifier: BSD-2-Clause
-Palette et mise en forme ci-dessous : ajouts propres à cette version.
+Thème clair, pensé pour rester lisible et net une fois capturé/copié dans un rapport.
+Palette dérivée des couleurs du logo CVSS : vert de marque + dégradé de sévérité
+vert → jaune → orange → rouge que l'on retrouve sur le logo officiel.
 */
 
 /* ==========================================================================
-   1. TOKENS — palette, typographie, rayons, ombres
+   1. TOKENS — palette, typographie, rayons
    ========================================================================== */
 :root {
   /* Surfaces */
-  --bg: #0A0E17;
-  --bg-panel: #121826;
-  --bg-panel-2: #161D2E;
-  --bg-elevated: #1B2438;
-  --border: #232C42;
-  --border-soft: #1A2233;
+  --bg: #FFFFFF;
+  --bg-panel: #FBFCFC;
+  --bg-panel-2: #F3F5F5;
+  --bg-elevated: #FFFFFF;
+  --border: #DDE2E1;
+  --border-soft: #E9ECEB;
 
   /* Texte */
-  --text-primary: #E9EDF6;
-  --text-secondary: #97A3BD;
-  --text-muted: #5C6580;
+  --text-primary: #1B2421;
+  --text-secondary: #566058;
+  --text-muted: #8B968E;
 
-  /* Accents de catégorie (chaque famille de métriques a sa couleur) */
-  --accent-base: #5B8CFF;
-  --accent-base-soft: rgba(91, 140, 255, 0.14);
-  --accent-threat: #B37BFF;
-  --accent-threat-soft: rgba(179, 123, 255, 0.14);
-  --accent-env: #1FD1B8;
-  --accent-env-soft: rgba(31, 209, 184, 0.14);
-  --accent-supplemental: #FF9B4D;
-  --accent-supplemental-soft: rgba(255, 155, 77, 0.14);
+  /* Vert de marque CVSS (couleur du logo) + variantes */
+  --brand-green: #1F8A4C;
+  --brand-green-dark: #146238;
+  --brand-green-soft: #E6F5EC;
 
-  /* Échelle de sévérité (le vocabulaire même du CVSS) */
-  --sev-none: #5C6580;
-  --sev-low: #2FD675;
-  --sev-medium: #F5C344;
-  --sev-high: #FF8A3D;
-  --sev-critical: #FF4757;
+  /* Accents de catégorie — dérivés de la palette du logo (vert de marque + dégradé de sévérité) */
+  --accent-base: #1F8A4C;          /* vert de marque */
+  --accent-base-soft: #E6F5EC;
+  --accent-threat: #B2540A;        /* orange du dégradé de sévérité */
+  --accent-threat-soft: #FBEEE2;
+  --accent-env: #0E7C74;           /* teal, famille du vert */
+  --accent-env-soft: #E3F3F1;
+  --accent-supplemental: #A68B1F;  /* jaune/or du dégradé de sévérité, assombri pour le contraste */
+  --accent-supplemental-soft: #F8F2DE;
+
+  /* Échelle de sévérité (le dégradé visible sur le logo CVSS lui-même) */
+  --sev-none: #8B968E;
+  --sev-none-soft: #EEF0EF;
+  --sev-low: #1F8A4C;
+  --sev-low-soft: #E6F5EC;
+  --sev-medium: #B08900;
+  --sev-medium-soft: #FBF3D9;
+  --sev-high: #C1560C;
+  --sev-high-soft: #FBEAE0;
+  --sev-critical: #C1272D;
+  --sev-critical-soft: #FBE6E7;
 
   /* Typographie */
   --font-display: 'Space Grotesk', 'Segoe UI', sans-serif;
   --font-body: 'IBM Plex Sans', 'Segoe UI', sans-serif;
   --font-mono: 'JetBrains Mono', 'SFMono-Regular', Consolas, monospace;
 
-  --radius-sm: 0.4rem;
-  --radius-md: 0.7rem;
-  --radius-lg: 1rem;
-
-  --shadow-panel: 0 8px 24px rgba(2, 5, 12, 0.35);
+  --radius-sm: 0.35rem;
+  --radius-md: 0.55rem;
+  --radius-lg: 0.75rem;
 }
 
 /* ==========================================================================
@@ -59,21 +69,12 @@ html, body {
   font-family: var(--font-body);
 }
 
-body {
-  background-image:
-    radial-gradient(circle at 12% 8%, rgba(91, 140, 255, 0.08), transparent 40%),
-    radial-gradient(circle at 88% 0%, rgba(179, 123, 255, 0.07), transparent 45%),
-    linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
-  background-size: auto, auto, 42px 42px, 42px 42px;
-  background-attachment: fixed;
-}
-
 a {
-  color: var(--accent-base);
+  color: var(--brand-green);
+  font-weight: 500;
 }
 a:hover {
-  color: #8FB0FF;
+  color: var(--brand-green-dark);
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -85,7 +86,7 @@ h1, h2, h3, h4, h5, h6 {
 #cvssReference {
   color: var(--text-secondary);
   font-weight: 400;
-  line-height: 1.5;
+  line-height: 1.55;
 }
 
 abbr[title] {
@@ -93,24 +94,19 @@ abbr[title] {
   cursor: help;
 }
 
-/* Bulles d'aide Spectre.css réhabillées dans le thème sombre */
 .tooltip:hover::after,
 .tooltip:focus::after {
-  background: #050810;
-  border: 1px solid var(--border);
-  color: var(--text-primary);
+  background: #1B2421;
+  border: 1px solid #1B2421;
+  color: #FFFFFF;
   font-family: var(--font-body);
   font-size: 0.72rem;
-  line-height: 1.35;
+  line-height: 1.4;
   max-width: 320px;
   white-space: pre-line;
-  padding: 0.5rem 0.6rem;
+  padding: 0.55rem 0.65rem;
   border-radius: var(--radius-sm);
-  box-shadow: var(--shadow-panel);
-}
-.tooltip:hover::before,
-.tooltip:focus::before {
-  border-top-color: var(--border);
+  box-shadow: 0 6px 18px rgba(27, 36, 33, 0.18);
 }
 
 /* ==========================================================================
@@ -122,10 +118,8 @@ abbr[title] {
   left: 0;
   width: 100%;
   z-index: 10;
-  background: rgba(10, 14, 23, 0.82);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-  border-bottom: 1px solid var(--border-soft);
+  background: #FFFFFF;
+  border-bottom: 1px solid var(--border);
   padding: 0.7rem 1rem;
 }
 
@@ -144,10 +138,6 @@ abbr[title] {
   gap: 0.6rem;
 }
 
-.brand-logo {
-  filter: drop-shadow(0 0 10px rgba(91, 140, 255, 0.35));
-}
-
 .brand-text {
   display: flex;
   flex-direction: column;
@@ -159,7 +149,8 @@ abbr[title] {
   font-size: 0.62rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--accent-base);
+  color: var(--brand-green);
+  font-weight: 600;
 }
 
 h3.page-title {
@@ -179,56 +170,39 @@ h3.page-title {
 }
 
 .vector-chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
+  display: inline-block;
   overflow-wrap: anywhere;
-  background: #050810;
-  border: 1px solid var(--border);
+  background: var(--brand-green-soft);
+  border: 1px solid #BFE2CD;
   border-radius: var(--radius-sm);
-  color: var(--accent-env);
+  color: var(--brand-green-dark);
   font-family: var(--font-mono);
+  font-weight: 500;
   font-size: 0.85rem;
   padding: 0.5rem 0.7rem;
   flex: 1 1 auto;
   min-width: 0;
-  box-shadow: inset 0 0 0 1px rgba(31, 209, 184, 0.06);
   transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 .vector-chip:hover {
-  border-color: var(--accent-env);
-  box-shadow: 0 0 0 3px var(--accent-env-soft);
-}
-.vector-chip__prompt {
-  color: var(--text-muted);
-  font-weight: 600;
-}
-.vector-chip__cursor {
-  display: inline-block;
-  width: 0.5em;
-  height: 1em;
-  margin-left: 0.1em;
-  background: var(--accent-env);
-  animation: blink 1.1s steps(1) infinite;
-  vertical-align: text-bottom;
-}
-@keyframes blink {
-  50% { opacity: 0; }
+  border-color: var(--brand-green);
+  box-shadow: 0 0 0 3px var(--brand-green-soft);
 }
 
 .btn-reset {
-  background: transparent;
+  background: #FFFFFF;
   border: 1px solid var(--border);
   color: var(--text-secondary);
   border-radius: var(--radius-sm);
   font-family: var(--font-body);
+  font-weight: 500;
   white-space: nowrap;
 }
 .btn-reset:hover,
 .btn-reset:focus {
-  border-color: var(--accent-supplemental);
-  color: var(--accent-supplemental);
-  background: var(--accent-supplemental-soft);
+  border-color: var(--accent-threat);
+  color: var(--accent-threat);
+  background: var(--accent-threat-soft);
 }
 
 .score-block {
@@ -243,7 +217,7 @@ h3.page-title {
 
 .score-label {
   font-family: var(--font-mono);
-  font-size: 0.68rem;
+  font-size: 0.66rem;
   letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--text-muted);
@@ -263,29 +237,23 @@ h3.page-title {
   font-size: 1.05rem;
   padding: 0.35rem 0.75rem;
   border-radius: 999px;
-  border: 1px solid transparent;
-  transition: box-shadow 0.2s ease;
+  border: 1.5px solid transparent;
 }
 .score-badge__sep {
-  opacity: 0.5;
+  opacity: 0.55;
   font-weight: 400;
 }
 .score-badge__severity {
-  font-size: 0.78rem;
+  font-size: 0.76rem;
   text-transform: uppercase;
   letter-spacing: 0.04em;
 }
 
-.score-badge.sev-none      { color: var(--sev-none);     background: rgba(92,101,128,0.14);  border-color: rgba(92,101,128,0.4); }
-.score-badge.sev-low       { color: var(--sev-low);      background: rgba(47,214,117,0.12);  border-color: rgba(47,214,117,0.45); box-shadow: 0 0 16px rgba(47,214,117,0.18); }
-.score-badge.sev-medium    { color: var(--sev-medium);   background: rgba(245,195,68,0.12);  border-color: rgba(245,195,68,0.45); box-shadow: 0 0 16px rgba(245,195,68,0.18); }
-.score-badge.sev-high      { color: var(--sev-high);     background: rgba(255,138,61,0.13);  border-color: rgba(255,138,61,0.5);  box-shadow: 0 0 18px rgba(255,138,61,0.22); }
-.score-badge.sev-critical  { color: var(--sev-critical); background: rgba(255,71,87,0.15);   border-color: rgba(255,71,87,0.55);  box-shadow: 0 0 22px rgba(255,71,87,0.32); animation: pulse-critical 1.8s ease-in-out infinite; }
-
-@keyframes pulse-critical {
-  0%, 100% { box-shadow: 0 0 14px rgba(255,71,87,0.28); }
-  50%      { box-shadow: 0 0 26px rgba(255,71,87,0.5); }
-}
+.score-badge.sev-none      { color: var(--sev-none);     background: var(--sev-none-soft);     border-color: #D3D8D5; }
+.score-badge.sev-low       { color: var(--sev-low);      background: var(--sev-low-soft);      border-color: #A9DABE; }
+.score-badge.sev-medium    { color: var(--sev-medium);   background: var(--sev-medium-soft);   border-color: #E9D389; }
+.score-badge.sev-high      { color: var(--sev-high);     background: var(--sev-high-soft);     border-color: #EBB78E; }
+.score-badge.sev-critical  { color: var(--sev-critical); background: var(--sev-critical-soft); border-color: #EFA6A9; }
 
 .sev-text-none     { color: var(--sev-none); }
 .sev-text-low      { color: var(--sev-low); }
@@ -312,9 +280,9 @@ h3.page-title {
   color: var(--text-muted);
 }
 .details-panel__macro code {
-  background: #050810;
+  background: var(--bg-panel-2);
   border: 1px solid var(--border);
-  color: var(--accent-threat);
+  color: var(--text-primary);
   font-family: var(--font-mono);
   padding: 0.15rem 0.45rem;
   border-radius: var(--radius-sm);
@@ -349,13 +317,12 @@ h3.page-title {
   --accent: var(--accent-base);
   --accent-soft: var(--accent-base-soft);
 
-  background: linear-gradient(180deg, var(--bg-panel) 0%, var(--bg-panel-2) 100%);
+  background: var(--bg-panel);
   border: 1px solid var(--border);
   border-top: 3px solid var(--accent);
   border-radius: var(--radius-lg);
   padding: 0.9rem 0.9rem 1.1rem 0.9rem;
   margin: 0 0 1.2rem 0;
-  box-shadow: var(--shadow-panel);
 }
 
 .metric-type.cat-base          { --accent: var(--accent-base);          --accent-soft: var(--accent-base-soft); }
@@ -364,6 +331,10 @@ h3.page-title {
 .metric-type.cat-supplemental  { --accent: var(--accent-supplemental);  --accent-soft: var(--accent-supplemental-soft); }
 
 .metric-type h4.text-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
   background: var(--accent-soft);
   color: var(--accent);
   font-family: var(--font-display);
@@ -371,13 +342,27 @@ h3.page-title {
   font-weight: 600;
   letter-spacing: 0.02em;
   text-transform: uppercase;
-  padding: 0.5rem 0.6rem;
+  padding: 0.55rem 0.6rem;
   margin-bottom: 0.6rem;
   border-radius: var(--radius-sm);
   border: 1px solid var(--accent-soft);
 }
-.metric-type h4.text-center sup {
-  color: var(--text-muted);
+
+/* Icône d'information moderne (remplace l'ancien "?") */
+.info-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--accent);
+  opacity: 0.75;
+  border-radius: 50%;
+  transition: opacity 0.15s ease, background 0.15s ease;
+}
+.info-icon:hover,
+.info-icon:focus {
+  opacity: 1;
+  background: rgba(0, 0, 0, 0.06);
+  outline: none;
 }
 
 .metric-group {
@@ -420,20 +405,19 @@ h3.page-title {
 }
 
 .btn {
-  background: var(--bg-panel-2);
+  background: #FFFFFF;
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
   color: var(--text-secondary);
   font-weight: 500;
-  transition: transform 0.12s ease, border-color 0.15s ease, background 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
+  transition: border-color 0.15s ease, background 0.15s ease, color 0.15s ease;
 }
 
 .btn:focus,
 .btn:hover {
-  background: var(--bg-elevated);
+  background: var(--accent-soft);
   border-color: var(--accent);
-  color: var(--text-primary);
-  transform: translateY(-1px);
+  color: var(--accent);
 }
 
 .btn:focus-visible {
@@ -451,34 +435,27 @@ h3.page-title {
 .btn.btn-primary {
   background: var(--accent);
   border: 1px solid var(--accent);
-  color: #060B14;
+  color: #FFFFFF;
   font-weight: 600;
-  box-shadow: 0 0 0 3px var(--accent-soft), 0 4px 14px -4px var(--accent);
 }
 
 .btn.btn-primary:focus,
 .btn.btn-primary:hover {
   background: var(--accent);
   border-color: var(--accent);
-  color: #060B14;
-  transform: translateY(-1px);
-  box-shadow: 0 0 0 4px var(--accent-soft), 0 6px 18px -4px var(--accent);
+  color: #FFFFFF;
+  filter: brightness(0.92);
 }
 
 .btn.btn-primary.active,
 .btn.btn-primary:active {
   background: var(--accent);
   border-color: var(--accent);
-  color: #060B14;
-}
-
-/* Options "Non Défini (X)" : discrètes, en pointillés, pour bien les distinguer des vraies valeurs */
-.btn abbr[title="Non Défini (X)"] {
-  text-decoration: none;
+  color: #FFFFFF;
 }
 
 /* ==========================================================================
-   6. RESPONSIVE
+   6. RESPONSIVE / IMPRESSION
    ========================================================================== */
 @media (max-width: 840px) {
   .header-inner {
@@ -493,12 +470,16 @@ h3.page-title {
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .vector-chip__cursor,
-  .score-badge.sev-critical {
-    animation: none;
+@media print {
+  #header {
+    position: static;
+    border-bottom: 2px solid var(--border);
   }
-  .btn {
-    transition: none;
+  .btn-reset,
+  .info-icon {
+    display: none;
+  }
+  .metric-type {
+    break-inside: avoid;
   }
 }
