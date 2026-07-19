@@ -27,7 +27,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
-    <title>Common Vulnerability Scoring System Version 4.0 Calculator</title>
+    <title>Calculateur CVSS Version 4.0 (Common Vulnerability Scoring System)</title>
     <!-- External Libraries -->
     <script src="https://unpkg.com/vue@3.2.45/dist/vue.global.prod.js"></script>
     <!-- Stylesheets -->
@@ -41,37 +41,37 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     <div id="app" class="container">
         <!-- Header Section -->
         <header id="header">
-            <img alt="CVSS logo" src="https://first.org/cvss/identity/cvssv4_web.png" width="125">
-            <h3 class="page-title">Common Vulnerability Scoring System Version 4.0 Calculator</h3>
+            <img alt="Logo CVSS" src="https://first.org/cvss/identity/cvssv4_web.png" width="125">
+            <h3 class="page-title">Calculateur CVSS Version 4.0 (Common Vulnerability Scoring System)</h3>
             <mark
                 class="tooltip c-hand"
-                aria-label="Click to copy vector to clipboard"
-                data-tooltip="Click vector to copy to clipboard"
+                aria-label="Cliquer pour copier le vecteur dans le presse-papiers"
+                data-tooltip="Cliquer sur le vecteur pour le copier"
                 role="button"
                 tabindex="0"
                 @click="copyVector">
                 {{ vector }}
             </mark>
-            <button class="btn btn-sm ml-2" @click="onReset()">Reset</button>
+            <button class="btn btn-sm ml-2" @click="onReset()">Réinitialiser</button>
             <h5 class="score-line">
                 <span
                     class="tooltip tooltip-bottom c-hand"
-                    :data-tooltip="showDetails ? 'Hide details' : 'Show details'"
-                    :aria-label="showDetails ? 'Hide details' : 'Show details'"
+                    :data-tooltip="showDetails ? 'Masquer les détails' : 'Afficher les détails'"
+                    :aria-label="showDetails ? 'Masquer les détails' : 'Afficher les détails'"
                     role="button"
                     tabindex="0"
                     @click="showDetails = !showDetails">
-                    CVSS v4.0 Score:
-                    <span :class="getSeverityClass(severityRating)">{{ score }} / {{ severityRating }}</span>
+                    Score CVSS v4.0 :
+                    <span :class="getSeverityClass(severityRating)">{{ score }} / {{ severityRatingFr }}</span>
                     <span v-if="!showDetails"> ⊕</span>
                     <span v-else> ⊖</span>
                 </span>
             </h5>
 
             <blockquote v-if="showDetails">
-                <sup class="mb-2"><i>Macro vector: {{ macroVector }}</i></sup>
+                <sup class="mb-2"><i>Macro-vecteur : {{ macroVector }}</i></sup>
                 <div v-for="(severity, description) in vectorInstance.severityBreakdown" :key="description">
-                    {{ description }}: {{ severity }}
+                    {{ translateBreakdownLabel(description) }} : {{ translateSeverity(severity) }}
                 </div>
             </blockquote>
 
@@ -80,31 +80,31 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         <!-- Metrics Section -->
         <main class="columns" :style="{'margin-top': header_height + 10 + 'px'}">
             <h6 id="cvssReference" style="width: 100%; max-width: 1065px; margin: 10px;">
-                Hover over metric names and metric values for a summary of the information in the official
+                Survolez le nom de chaque métrique ou de chaque valeur pour afficher une explication claire, avec un exemple concret, basée sur le
                 <a href="https://www.first.org/cvss/v4.0/specification-document" target="_blank">
-                    CVSS v4.0 Specification Document
+                    document de spécification officiel CVSS v4.0
                 </a>.
-                The Specification is available along with a
+                Ce document est complété par un
                 <a href="https://www.first.org/cvss/v4.0/user-guide" target="_blank">
-                    User Guide
+                    guide utilisateur
                 </a>
-                providing additional scoring guidance, an
+                donnant des conseils supplémentaires de notation, un
                 <a href="https://www.first.org/cvss/v4.0/examples" target="_blank">
-                    Examples document
+                    document d'exemples
                 </a>
-                of scored vulnerabilities, a set of
+                de vulnérabilités notées, une
                 <a href="https://www.first.org/cvss/v4.0/faq" target="_blank">
-                    Frequently Asked Questions (FAQ)
-                </a>, and both JSON and XML Data Representations for all versions of CVSS, including the
+                    foire aux questions (FAQ)
+                </a>, ainsi que des représentations de données au format JSON et XML pour toutes les versions de CVSS, dont le
                 <a href="https://www.first.org/cvss/cvss-v4.0.json" target="_blank">
-                    JSON format
+                    format JSON
                 </a>.
             </h6>
             <div class="column col-10 col-xl-12">
                 <div class="metric-type" v-for="(metricTypeData, metricType) in cvssConfigData">
                     <h4 class="text-center">
                         {{ metricType }}
-                        <span class="tooltip tooltip-left c-hand text-small" :data-tooltip="'This category should be filled \n by the ' + metricTypeData.fill">
+                        <span class="tooltip tooltip-left c-hand text-small" :data-tooltip="'Cette catégorie doit être renseignée \n par ' + metricTypeData.fill">
                             <sup>?</sup>
                         </span>
                     </h4>
