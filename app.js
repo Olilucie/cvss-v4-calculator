@@ -1,26 +1,6 @@
 // Copyright FIRST, Red Hat, and contributors
 // SPDX-License-Identifier: BSD-2-Clause
 
-// Traductions d'affichage uniquement : le moteur de calcul (cvss40.js) continue de
-// travailler avec les libellés anglais d'origine (None/Low/Medium/High/Critical), on
-// ne fait que traduire ce qui est montré à l'écran.
-const SEVERITY_FR = {
-    "None": "Aucune",
-    "Low": "Faible",
-    "Medium": "Moyenne",
-    "High": "Élevée",
-    "Critical": "Critique"
-};
-
-const BREAKDOWN_LABEL_FR = {
-    "Exploitability": "Exploitabilité",
-    "Complexity": "Complexité",
-    "Vulnerable system": "Système vulnérable",
-    "Subsequent system": "Système subséquent",
-    "Exploitation": "Exploitation",
-    "Security requirements": "Exigences de sécurité"
-};
-
 const app = Vue.createApp({
     data() {
         return {
@@ -33,22 +13,6 @@ const app = Vue.createApp({
         };
     },
     methods: {
-        /**
-         * Traduit un libellé de sévérité anglais (calculé par le moteur) vers le français, pour l'affichage.
-         * @param {string} severity - Libellé anglais ("Low", "High", etc.)
-         * @returns {string} - Libellé en français.
-         */
-        translateSeverity(severity) {
-            return SEVERITY_FR[severity] || severity;
-        },
-        /**
-         * Traduit le nom d'une catégorie du détail du macro-vecteur (ex: "Exploitability" -> "Exploitabilité").
-         * @param {string} description - Nom anglais de la catégorie.
-         * @returns {string} - Nom en français.
-         */
-        translateBreakdownLabel(description) {
-            return BREAKDOWN_LABEL_FR[description] || description;
-        },
         /**
          * Fetches and loads the configuration data from the metrics.json file.
          * Initializes the vector and CVSS instances after loading the data.
@@ -177,14 +141,6 @@ const app = Vue.createApp({
          */
         severityRating() {
             return this.cvssInstance ? this.cvssInstance.severity : "None";
-        },
-        /**
-         * Version française du libellé de sévérité, utilisée uniquement pour l'affichage.
-         * getSeverityClass() continue d'utiliser severityRating (en anglais) pour choisir la couleur.
-         * @returns {string} - Le libellé de sévérité en français (ex: "Élevée").
-         */
-        severityRatingFr() {
-            return this.translateSeverity(this.severityRating);
         }
     },
     async beforeMount() {
