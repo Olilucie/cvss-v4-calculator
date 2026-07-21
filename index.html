@@ -28,10 +28,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
     <title>Calculateur CVSS Version 4.0 (Common Vulnerability Scoring System)</title>
-    <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
     <!-- External Libraries -->
     <script src="https://unpkg.com/vue@3.2.45/dist/vue.global.prod.js"></script>
     <!-- Stylesheets -->
@@ -45,124 +41,44 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     <div id="app" class="container">
         <!-- Header Section -->
         <header id="header">
-            <div class="header-inner">
-                <div class="brand-block">
-                    <img alt="Logo CVSS" class="brand-logo" src="https://first.org/cvss/identity/cvssv4_web.png" width="40">
-                    <div class="brand-text">
-                        <span class="brand-eyebrow">FIRST · Common Vulnerability Scoring System</span>
-                        <h3 class="page-title">Calculateur CVSS v4.0</h3>
-                    </div>
-                </div>
+            <img alt="Logo CVSS" src="https://first.org/cvss/identity/cvssv4_web.png" width="125">
+            <h3 class="page-title">Calculateur CVSS Version 4.0 (Common Vulnerability Scoring System)</h3>
+            <mark
+                class="tooltip c-hand"
+                aria-label="Cliquer pour copier le vecteur dans le presse-papiers"
+                data-tooltip="Cliquer sur le vecteur pour le copier"
+                role="button"
+                tabindex="0"
+                @click="copyVector">
+                {{ vector }}
+            </mark>
+            <button class="btn btn-sm ml-2" @click="onReset()">Réinitialiser</button>
+            <h5 class="score-line">
+                <span
+                    class="tooltip tooltip-bottom c-hand"
+                    :data-tooltip="showDetails ? 'Masquer les détails' : 'Afficher les détails'"
+                    :aria-label="showDetails ? 'Masquer les détails' : 'Afficher les détails'"
+                    role="button"
+                    tabindex="0"
+                    @click="showDetails = !showDetails">
+                    Score CVSS v4.0 :
+                    <span :class="getSeverityClass(severityRating)">{{ score }} / {{ severityRatingFr }}</span>
+                    <span v-if="!showDetails"> ⊕</span>
+                    <span v-else> ⊖</span>
+                </span>
+            </h5>
 
-                <div class="vector-block">
-                    <mark
-                        class="vector-chip tooltip c-hand"
-                        aria-label="Cliquer pour copier le vecteur dans le presse-papiers"
-                        data-tooltip="Cliquer sur le vecteur pour le copier"
-                        role="button"
-                        tabindex="0"
-                        @click="copyVector">{{ vector }}</mark>
-                    <button class="btn btn-sm btn-reset" @click="onReset()">↺ Réinitialiser</button>
-                    <button class="btn btn-sm btn-print" @click="printReport()">🖨 Imprimer le rapport</button>
+            <blockquote v-if="showDetails">
+                <sup class="mb-2"><i>Macro-vecteur : {{ macroVector }}</i></sup>
+                <div v-for="(severity, description) in vectorInstance.severityBreakdown" :key="description">
+                    {{ translateBreakdownLabel(description) }} : {{ translateSeverity(severity) }}
                 </div>
+            </blockquote>
 
-                <div class="score-block">
-                    <span
-                        class="score-toggle tooltip tooltip-bottom c-hand"
-                        :data-tooltip="showDetails ? 'Masquer les détails' : 'Afficher les détails'"
-                        :aria-label="showDetails ? 'Masquer les détails' : 'Afficher les détails'"
-                        role="button"
-                        tabindex="0"
-                        @click="showDetails = !showDetails">
-                        <span class="score-label">Score CVSS v4.0</span>
-                        <span class="score-badge" :class="getSeverityClass(severityRating)">
-                            <span class="score-badge__value">{{ score }}</span>
-                            <span class="score-badge__sep">/</span>
-                            <span class="score-badge__severity">{{ severityRatingFr }}</span>
-                        </span>
-                        <span class="score-chevron">{{ showDetails ? '⊖' : '⊕' }}</span>
-                    </span>
-                </div>
-            </div>
-
-            <div class="details-panel" v-if="showDetails">
-                <div class="details-panel__macro"><span>Macro-vecteur</span><code>{{ macroVector }}</code></div>
-                <div class="details-panel__grid">
-                    <div class="details-chip" v-for="(severity, description) in vectorInstance.severityBreakdown" :key="description">
-                        <span class="details-chip__label">{{ translateBreakdownLabel(description) }}</span>
-                        <span class="details-chip__value" :class="'sev-text-' + severity.toLowerCase()">{{ translateSeverity(severity) }}</span>
-                    </div>
-                </div>
-            </div>
         </header>
 
         <!-- Metrics Section -->
-        <main class="columns" :style="{'margin-top': header_height + 20 + 'px'}">
-
-            <!-- ============================================================ -->
-            <!-- RAPPORT DE SYNTHÈSE (visible à l'écran + seule zone imprimée) -->
-            <!-- ============================================================ -->
-            <section id="report" class="report-card">
-                <div class="report-print-header">
-                    <img alt="Logo CVSS" src="https://first.org/cvss/identity/cvssv4_web.png" width="90">
-                    <div>
-                        <div class="report-print-header__eyebrow">FIRST · Common Vulnerability Scoring System</div>
-                        <h2 class="report-print-header__title">Rapport d'évaluation CVSS v4.0</h2>
-                    </div>
-                </div>
-
-                <div class="report-summary">
-                    <!-- Graphique : barre de sévérité, hauteur et couleur selon le score -->
-                    <div class="gauge">
-                        <div class="gauge__scale">
-                            <span>10</span><span>7.5</span><span>5</span><span>2.5</span><span>0</span>
-                        </div>
-                        <div class="gauge__track">
-                            <div class="gauge__fill" :class="getSeverityClass(severityRating)"
-                                 :style="{ height: scorePercent + '%' }">
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Note globale -->
-                    <div class="report-score">
-                        <div class="report-score__label">Note de sévérité globale</div>
-                        <div class="report-score__value" :class="'sev-text-' + severityRating.toLowerCase()">
-                            {{ score }}<span class="report-score__max">/ 10</span>
-                        </div>
-                        <div class="report-score__badge score-badge" :class="getSeverityClass(severityRating)">
-                            <span class="score-badge__severity">{{ severityRatingFr }}</span>
-                        </div>
-                        <div class="report-score__vector">
-                            <span class="report-score__vector-label">Vecteur</span>
-                            <code>{{ vector }}</code>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Détail des choix, catégorie par catégorie -->
-                <div class="report-details">
-                    <h3 class="report-details__title">Détail des critères retenus</h3>
-                    <div class="report-group" v-for="group in reportGroups" :key="group.metricType">
-                        <h4 class="report-group__title" :class="metricTypeClass(group.metricType)">
-                            {{ group.metricType }}
-                        </h4>
-                        <div class="report-line" v-for="item in group.items" :key="item.short">
-                            <div class="report-line__head">
-                                <span class="report-line__metric">{{ item.metricName }}</span>
-                                <span class="report-line__arrow">→</span>
-                                <span class="report-line__choice">{{ item.optionLabel }}</span>
-                            </div>
-                            <div class="report-line__explanation">{{ item.explanation }}</div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="report-footer">
-                    Rapport généré avec le calculateur CVSS v4.0. Barème officiel : Aucune (0.0) · Faible (0.1–3.9) · Moyenne (4.0–6.9) · Élevée (7.0–8.9) · Critique (9.0–10.0).
-                </div>
-            </section>
-
+        <main class="columns" :style="{'margin-top': header_height + 10 + 'px'}">
             <h6 id="cvssReference" style="width: 100%; max-width: 1065px; margin: 10px;">
                 Survolez le nom de chaque métrique ou de chaque valeur pour afficher une explication claire, avec un exemple concret, basée sur le
                 <a href="https://www.first.org/cvss/v4.0/specification-document" target="_blank">
@@ -185,15 +101,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
                 </a>.
             </h6>
             <div class="column col-10 col-xl-12">
-                <div class="metric-type" :class="metricTypeClass(metricType)" v-for="(metricTypeData, metricType) in cvssConfigData">
+                <div class="metric-type" v-for="(metricTypeData, metricType) in cvssConfigData">
                     <h4 class="text-center">
                         {{ metricType }}
-                        <span class="info-icon tooltip tooltip-left c-hand" :data-tooltip="'Cette catégorie doit être renseignée \n par ' + metricTypeData.fill" role="button" tabindex="0" aria-label="Informations sur cette catégorie">
-                            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                                <circle cx="12" cy="12" r="9.25" stroke="currentColor" stroke-width="1.6"/>
-                                <path d="M12 11v5.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-                                <circle cx="12" cy="7.7" r="1.15" fill="currentColor"/>
-                            </svg>
+                        <span class="tooltip tooltip-left c-hand text-small" :data-tooltip="'Cette catégorie doit être renseignée \n par ' + metricTypeData.fill">
+                            <sup>?</sup>
                         </span>
                     </h4>
                     <div class="metric-group" v-for="(metricGroupData, metricGroup) in metricTypeData.metric_groups">

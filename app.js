@@ -50,25 +50,6 @@ const app = Vue.createApp({
             return BREAKDOWN_LABEL_FR[description] || description;
         },
         /**
-         * Determine la classe CSS de la catégorie de métrique (couleur d'accent) à partir de son nom français.
-         * @param {string} metricType - Nom (en français) de la catégorie ("Métriques de Base", etc.).
-         * @returns {string} - La classe CSS correspondante ("cat-base", "cat-threat", ...).
-         */
-        metricTypeClass(metricType) {
-            if (metricType.startsWith("Métriques de Base")) return "cat-base";
-            if (metricType.startsWith("Métriques de Menace")) return "cat-threat";
-            if (metricType.startsWith("Métriques Supplémentaires")) return "cat-supplemental";
-            if (metricType.startsWith("Environnementales")) return "cat-env";
-            return "cat-base";
-        },
-        /**
-         * Ouvre la boîte de dialogue d'impression du navigateur.
-         * La feuille de style @media print n'imprime que le rapport de synthèse.
-         */
-        printReport() {
-            window.print();
-        },
-        /**
          * Fetches and loads the configuration data from the metrics.json file.
          * Initializes the vector and CVSS instances after loading the data.
          */
@@ -93,19 +74,19 @@ const app = Vue.createApp({
         },
         /**
          * Returns the CSS class based on the severity rating.
-         * Maps severity levels to appropriate CSS classes for the glowing score badge.
+         * Maps severity levels to appropriate CSS classes.
          * @param {string} severityRating - The severity rating (e.g., "Low", "Medium").
          * @returns {string} - The corresponding CSS class.
          */
         getSeverityClass(severityRating) {
             const severityClasses = {
-                "None": "sev-none",
-                "Low": "sev-low",
-                "Medium": "sev-medium",
-                "High": "sev-high",
-                "Critical": "sev-critical"
+                "Low": "c-hand text-success",
+                "Medium": "c-hand text-warning",
+                "High": "c-hand text-error",
+                "Critical": "c-hand text-error text-bold",
+                "None": "c-hand text-gray"
             };
-            return severityClasses[severityRating] || "sev-none"; // Default to gray if undefined
+            return severityClasses[severityRating] || "c-hand text-gray"; // Default to gray if undefined
         },
         /**
          * Copies the current CVSS vector string to the clipboard and updates the URL hash.
@@ -204,60 +185,6 @@ const app = Vue.createApp({
          */
         severityRatingFr() {
             return this.translateSeverity(this.severityRating);
-        },
-        /**
-         * Hauteur du graphique de sévérité, en pourcentage (score sur 10).
-         * @returns {number} - Pourcentage de remplissage de la barre (0 à 100).
-         */
-        scorePercent() {
-            return Math.max(0, Math.min(100, (Number(this.score) / 10) * 100));
-        },
-        /**
-         * Construit le rapport de synthèse : pour chaque catégorie, la liste des
-         * métriques réellement renseignées, avec l'intitulé du choix et son explication.
-         * Les métriques laissées sur « Non Défini (X) » sont ignorées (elles n'influent pas
-         * sur le score et n'ont pas à figurer dans le rapport).
-         * @returns {Array} - Liste de catégories, chacune avec ses lignes de rapport.
-         */
-        reportGroups() {
-            // On lit this.vector pour que le rapport se recalcule à chaque changement de vecteur.
-            const anchor = this.vector;
-            if (!this.cvssConfigData) return [];
-
-            const groups = [];
-            for (const [metricType, typeData] of Object.entries(this.cvssConfigData)) {
-                const items = [];
-                for (const groupData of Object.values(typeData.metric_groups)) {
-                    for (const [metricName, metricData] of Object.entries(groupData)) {
-                        const short = metricData.short;
-                        const value = this.vectorInstance.metrics[short];
-                        if (value === undefined || value === "X") continue; // non renseigné
-
-                        // Retrouver l'option choisie pour récupérer son libellé + explication
-                        let chosen = null;
-                        for (const [optLabel, optData] of Object.entries(metricData.options)) {
-                            if (optLabel === "") continue;
-                            if (optData.value === value) {
-                                chosen = { label: optLabel, tooltip: optData.tooltip };
-                                break;
-                            }
-                        }
-                        if (!chosen) continue;
-
-                        items.push({
-                            metricName: metricName,       // ex: "Vecteur d'Attaque (AV)"
-                            short: short,                 // ex: "AV"
-                            value: value,                 // ex: "N"
-                            optionLabel: chosen.label,    // ex: "Réseau (N)"
-                            explanation: chosen.tooltip   // phrase explicative + exemple
-                        });
-                    }
-                }
-                if (items.length) {
-                    groups.push({ metricType: metricType, items: items });
-                }
-            }
-            return groups;
         }
     },
     async beforeMount() {
