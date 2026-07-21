@@ -1,325 +1,726 @@
 {
   "Métriques de Base": {
-    "fill": "L'éditeur du produit vulnérable",
+    "fill": "le fournisseur (l'éditeur du produit vulnérable)",
     "metric_groups": {
-      "Métriques d'Exploitabilité (Comment l'attaque se déroule)": {
+      "Métriques d'Exploitabilité": {
         "Vecteur d'Attaque (AV)": {
-          "tooltip": "Le point d'accès réseau requis pour atteindre la cible[cite: 1].",
+          "tooltip": "Indique comment l'attaquant doit s'y prendre, d'un point de vue réseau, pour atteindre le système vulnérable. Plus l'attaquant peut être « loin » (logiquement ou physiquement) du système pour l'exploiter, plus la sévérité est élevée : le nombre d'attaquants potentiels est bien plus grand pour une faille accessible depuis Internet que pour une faille nécessitant un accès physique à la machine.",
           "short": "AV",
           "options": {
             "Réseau (N)": {
-              "tooltip": "Accessible depuis Internet[cite: 1]. Exemple : Faille sur un serveur web public ou une API exposée[cite: 1].",
+              "tooltip": "Le système est atteignable depuis le réseau, potentiellement depuis tout Internet. C'est le cas le plus grave car le nombre d'attaquants possibles est illimité. Exemple : une faille dans une application web accessible publiquement, exploitable simplement en envoyant une requête HTTP depuis n'importe où dans le monde.",
               "value": "N"
             },
             "Adjacent (A)": {
-              "tooltip": "Accessible depuis le réseau local ou sous-réseau[cite: 1]. Exemple : Attaque via le Wi-Fi de l'entreprise ou un VLAN partagé[cite: 1].",
+              "tooltip": "L'attaque nécessite d'être sur le même réseau logique ou à proximité physique immédiate (Wi-Fi, Bluetooth, NFC, sous-réseau local, VPN interne). Exemple : une faille dans un routeur domestique exploitable uniquement par un appareil déjà connecté au même Wi-Fi.",
               "value": "A"
             },
             "Local (L)": {
-              "tooltip": "Nécessite un accès logique au système[cite: 1]. Exemple : Avoir une session SSH ouverte ou forcer un utilisateur à exécuter un script sur son poste[cite: 1].",
+              "tooltip": "L'attaquant doit avoir un accès local à la machine (clavier, console, SSH) ou faire agir un utilisateur légitime pour lui (ingénierie sociale). Exemple : une faille d'élévation de privilèges qui nécessite d'être déjà connecté en SSH sur le serveur, ou un fichier piégé que la victime doit ouvrir elle-même.",
               "value": "L"
             },
             "Physique (P)": {
-              "tooltip": "Nécessite une manipulation matérielle[cite: 1]. Exemple : Brancher une clé USB malveillante directement sur un rack en salle des machines[cite: 1]."
+              "tooltip": "L'attaquant doit toucher ou manipuler physiquement l'appareil (brancher une clé USB, ouvrir le boîtier). Exemple : une attaque de type « evil maid » où quelqu'un doit brancher un câble sur le port de debug d'un distributeur automatique.",
+              "value": "P"
             }
           },
           "selected": "N"
         },
         "Complexité de l'Attaque (AC)": {
-          "tooltip": "Le niveau de difficulté technique pour contourner les protections du système cible (comme l'ASLR)[cite: 1].",
+          "tooltip": "Mesure les actions techniques que l'attaquant doit accomplir pour contourner des protections déjà en place (ASLR, DEP, etc.) avant de pouvoir exploiter la faille de façon fiable. Ne prend en compte que les conditions liées aux mécanismes de sécurité, pas les conditions de déploiement (voir Exigences de l'Attaque).",
           "short": "AC",
           "options": {
             "Faible (L)": {
-              "tooltip": "L'exploit fonctionne de manière fiable sans préparation spécifique[cite: 1]. Exemple : Exploitation d'un Buffer Overflow standard sans protection mémoire à contourner[cite: 1].",
+              "tooltip": "Aucune action particulière n'est nécessaire pour contourner une protection : l'attaque fonctionne à chaque tentative, sans préparation spécifique à la cible. Exemple : envoyer une requête malformée qui déclenche systématiquement un dépassement de tampon (buffer overflow), sans avoir besoin de connaître de secret propre à la cible.",
               "value": "L"
             },
             "Élevée (H)": {
-              "tooltip": "L'attaquant doit d'abord contourner des mécanismes de sécurité actifs ou collecter des secrets spécifiques à la cible[cite: 1].",
+              "tooltip": "L'attaquant doit d'abord contourner une protection active (ASLR, DEP…) ou obtenir un secret propre à la cible (clé, token) avant que l'attaque ne fonctionne, ce qui la rend moins fiable et plus longue à préparer. Exemple : devoir d'abord deviner l'adresse mémoire d'une fonction protégée par ASLR avant de pouvoir déclencher l'exploitation.",
               "value": "H"
             }
           },
           "selected": "L"
         },
         "Exigences de l'Attaque (AT)": {
-          "tooltip": "Les conditions d'exécution (hors sécurité) requises pour que l'attaque aboutisse[cite: 1].",
+          "tooltip": "Mesure les conditions de déploiement ou d'exécution du système cible qui doivent être réunies pour que l'attaque fonctionne, indépendamment de toute mesure de sécurité (par exemple, gagner une condition de concurrence, ou devoir être positionné sur le chemin réseau entre la victime et sa cible).",
           "short": "AT",
           "options": {
             "Aucune (N)": {
-              "tooltip": "L'exploit fonctionne n'importe quand et dans toutes les configurations de base[cite: 1].",
+              "tooltip": "L'attaque fonctionne dans (presque) toutes les conditions de déploiement, sans dépendre d'un concours de circonstances. Exemple : une faille d'injection SQL exploitable à chaque requête envoyée au formulaire de connexion.",
               "value": "N"
             },
             "Présente (P)": {
-              "tooltip": "Nécessite un contexte précis[cite: 1]. Exemple : Gagner une \"race condition\" (timing critique) ou devoir se trouver en position de Man-in-the-Middle sur le trafic[cite: 1].",
+              "tooltip": "L'attaque ne réussit que si des conditions particulières, indépendantes de toute mesure de sécurité, sont réunies : gagner une race condition, ou être positionné en interception sur le chemin réseau (attaque de l'intercepteur / on-path). Exemple : devoir déclencher l'exploit exactement au moment où deux threads accèdent au même fichier, ce qui peut nécessiter plusieurs tentatives.",
               "value": "P"
             }
           },
           "selected": "N"
         },
         "Privilèges Requis (PR)": {
-          "tooltip": "Le niveau d'authentification nécessaire avant l'attaque[cite: 1].",
+          "tooltip": "Indique le niveau de droits (aucun, utilisateur simple, administrateur) que l'attaquant doit déjà posséder sur le système avant de pouvoir exploiter la faille.",
           "short": "PR",
           "options": {
             "Aucun (N)": {
-              "tooltip": "Aucune authentification. L'attaquant est anonyme[cite: 1].",
+              "tooltip": "L'attaquant n'a besoin d'aucun compte ni d'aucune autorisation préalable sur le système. Exemple : un visiteur anonyme d'un site web peut exploiter la faille sans se connecter.",
               "value": "N"
             },
             "Faible (L)": {
-              "tooltip": "Compte utilisateur basique requis[cite: 1]. Exemple : Un accès employé standard[cite: 1].",
+              "tooltip": "L'attaquant a besoin d'un compte basique, avec des droits limités à ses propres ressources. Exemple : un utilisateur standard, sans droit d'administration, peut déclencher la faille depuis son propre espace personnel.",
               "value": "L"
             },
             "Élevé (H)": {
-              "tooltip": "Compte à privilèges requis[cite: 1]. Exemple : Être connecté en tant qu'administrateur système ou root[cite: 1].",
+              "tooltip": "L'attaquant doit déjà posséder des droits significatifs, proches de l'administration, donnant un accès étendu au système. Exemple : seul un compte administrateur du panneau d'administration peut déclencher la faille.",
               "value": "H"
             }
           },
           "selected": "N"
         },
         "Interaction Utilisateur (UI)": {
-          "tooltip": "La nécessité d'une action d'un utilisateur légitime pour déclencher la faille[cite: 1].",
+          "tooltip": "Indique si une personne autre que l'attaquant (la victime) doit interagir avec le système pour que l'exploitation réussisse (par exemple ouvrir une pièce jointe, cliquer un lien).",
           "short": "UI",
           "options": {
             "Aucune (N)": {
-              "tooltip": "L'attaque s'exécute de façon autonome (ex: un ver réseau)[cite: 1].",
+              "tooltip": "L'exploitation ne demande aucune action de la part d'un utilisateur autre que l'attaquant. Exemple : un ver qui se propage tout seul entre serveurs sans qu'aucun humain n'ait besoin de cliquer sur quoi que ce soit.",
               "value": "N"
             },
             "Passive (P)": {
-              "tooltip": "Interaction involontaire et minime[cite: 1]. Exemple : La victime navigue simplement sur une page web compromise[cite: 1].",
+              "tooltip": "La victime doit interagir de façon minime et involontaire avec le système ou la charge malveillante, sans avoir besoin de contourner activement une protection. Exemple : la victime consulte simplement une page web piégée, sans cliquer sur rien de spécial, pour déclencher un script malveillant.",
               "value": "P"
             },
             "Active (A)": {
-              "tooltip": "Action volontaire spécifique[cite: 1]. Exemple : La victime doit télécharger un exécutable et valider son ouverture[cite: 1].",
+              "tooltip": "La victime doit accomplir une action consciente et spécifique pour que l'attaque fonctionne. Exemple : la victime doit télécharger puis ouvrir volontairement une pièce jointe Office piégée et activer les macros.",
               "value": "A"
             }
           },
           "selected": "N"
         }
       },
-      "Métriques d'Impact (Conséquences sur le système ciblé)": {
-        "Confidentialité (VC)": {
-          "tooltip": "Impact sur le vol ou la fuite de données[cite: 1].",
+      "Métriques d'Impact sur le Système Vulnérable": {
+        "Confidentialité (Système Vulnérable) (VC)": {
+          "tooltip": "Mesure l'impact sur la confidentialité des informations du SYSTÈME VULNÉRABLE lui-même (celui qui contient la faille), c'est-à-dire la capacité de l'attaquant à lire des données auxquelles il ne devrait pas avoir accès.",
           "short": "VC",
           "options": {
             "Élevé (H)": {
-              "tooltip": "Compromission totale des secrets[cite: 1]. Exemple : Vol de la base de données, des mots de passe ou des clés de chiffrement[cite: 1].",
+              "tooltip": "Perte totale de confidentialité : l'attaquant récupère toutes les données du système vulnérable, ou récupère des données restreintes mais dont la divulgation a un impact direct et grave. Exemple : l'attaquant récupère le mot de passe administrateur ou la clé privée du serveur web.",
               "value": "H"
             },
             "Faible (L)": {
-              "tooltip": "Fuite limitée[cite: 1]. Exemple : Accès en lecture seule à des fichiers système non critiques ou des logs de base[cite: 1].",
+              "tooltip": "Perte partielle et limitée de confidentialité : l'attaquant obtient un accès à certaines informations restreintes, mais sans contrôle sur ce qu'il obtient ni impact grave direct. Exemple : l'attaquant peut lire les en-têtes de version d'un logiciel, sans accéder à des données sensibles.",
               "value": "L"
             },
             "Aucun (N)": {
-              "tooltip": "Aucune perte de confidentialité[cite: 1].",
+              "tooltip": "Aucune perte de confidentialité sur le système vulnérable.",
               "value": "N"
             }
           },
           "selected": "N"
         },
-        "Intégrité (VI)": {
-          "tooltip": "Impact sur la modification ou la destruction de données[cite: 1].",
+        "Intégrité (Système Vulnérable) (VI)": {
+          "tooltip": "Mesure l'impact sur l'intégrité des données du SYSTÈME VULNÉRABLE, c'est-à-dire la capacité de l'attaquant à modifier des données ou du code sans autorisation.",
           "short": "VI",
           "options": {
             "Élevé (H)": {
-              "tooltip": "Perte de contrôle totale des données[cite: 1]. Exemple : L'attaquant altère des fichiers critiques ou supprime des tables de production[cite: 1].",
+              "tooltip": "Perte totale d'intégrité, ou perte complète de protection : l'attaquant peut modifier tout ou partie critique des fichiers/données du système vulnérable. Exemple : l'attaquant modifie n'importe quel fichier protégé par l'application, y compris les fichiers système.",
               "value": "H"
             },
             "Faible (L)": {
-              "tooltip": "Modification mineure[cite: 1]. Exemple : L'attaquant modifie une page d'erreur web ou un log, sans bloquer le système[cite: 1].",
+              "tooltip": "Modification de données possible mais limitée ou sans conséquence grave directe ; l'attaquant ne contrôle pas précisément ce qu'il modifie. Exemple : l'attaquant peut modifier un champ de commentaire public sans autre conséquence.",
               "value": "L"
             },
             "Aucun (N)": {
-              "tooltip": "Aucune altération des données[cite: 1].",
+              "tooltip": "Aucune perte d'intégrité sur le système vulnérable.",
               "value": "N"
             }
           },
           "selected": "N"
         },
-        "Disponibilité (VA)": {
-          "tooltip": "Impact sur le fonctionnement et l'accessibilité du service[cite: 1].",
+        "Disponibilité (Système Vulnérable) (VA)": {
+          "tooltip": "Mesure l'impact sur la disponibilité du SYSTÈME VULNÉRABLE, c'est-à-dire la capacité de l'attaquant à ralentir, interrompre ou rendre inutilisable le système ou ses ressources (bande passante, CPU, disque…).",
           "short": "VA",
           "options": {
             "Élevé (H)": {
-              "tooltip": "Déni de service complet[cite: 1]. Exemple : Crash du serveur ou effacement rendant la machine totalement inutilisable[cite: 1].",
+              "tooltip": "Perte totale de disponibilité : l'attaquant peut rendre le système vulnérable totalement inaccessible, de façon prolongée ou permanente. Exemple : l'attaquant fait planter le serveur avec une seule requête, nécessitant un redémarrage manuel.",
               "value": "H"
             },
             "Faible (L)": {
-              "tooltip": "Dégradation des performances[cite: 1]. Exemple : Le service répond toujours mais il est très ralenti[cite: 1].",
+              "tooltip": "Performance réduite ou interruptions ponctuelles, sans déni de service complet et durable. Exemple : l'attaquant ralentit légèrement les réponses du serveur sans l'indisponibiliser.",
               "value": "L"
             },
             "Aucun (N)": {
-              "tooltip": "Aucun impact sur la disponibilité[cite: 1].",
+              "tooltip": "Aucun impact sur la disponibilité du système vulnérable.",
               "value": "N"
             }
           },
           "selected": "N"
         }
       },
-      "Métriques de Rebond (Impact sur les systèmes connectés)": {
-        "Confidentialité (SC)": {
-          "tooltip": "Fuite de données sur un système distant connecté à la cible initiale[cite: 1].",
+      "Métriques d'Impact sur le Système Subséquent": {
+        "Confidentialité (Système Subséquent) (SC)": {
+          "tooltip": "Mesure l'impact sur la confidentialité d'un SYSTÈME SUBSÉQUENT (un autre système, différent du système vulnérable, atteint via un effet de rebond après l'exploitation).",
           "short": "SC",
           "options": {
-            "Élevé (H)": { "tooltip": "Vol total des données sur le système distant (rebond réussi)[cite: 1].", "value": "H" },
-            "Faible (L)": { "tooltip": "Fuite partielle sur le système distant[cite: 1].", "value": "L" },
-            "Aucun (N)": { "tooltip": "Impact confiné à la cible initiale[cite: 1].", "value": "N" }
+            "Élevé (H)": {
+              "tooltip": "Perte totale de confidentialité : l'attaquant récupère toutes les données du système subséquent, ou récupère des données restreintes mais dont la divulgation a un impact direct et grave. Exemple : l'attaquant, après avoir compromis un objet connecté, récupère les identifiants du serveur cloud auquel il est relié.",
+              "value": "H"
+            },
+            "Faible (L)": {
+              "tooltip": "Perte partielle et limitée de confidentialité : l'attaquant obtient un accès à certaines informations restreintes, mais sans contrôle sur ce qu'il obtient ni impact grave direct. Exemple : l'attaquant obtient des métadonnées peu sensibles d'un système tiers relié au système vulnérable.",
+              "value": "L"
+            },
+            "Aucun (N)": {
+              "tooltip": "Aucune perte de confidentialité sur le système subséquent.",
+              "value": "N"
+            }
           },
           "selected": "N"
         },
-        "Intégrité (SI)": {
-          "tooltip": "Modification de données sur un système distant connecté[cite: 1].",
+        "Intégrité (Système Subséquent) (SI)": {
+          "tooltip": "Mesure l'impact sur l'intégrité d'un SYSTÈME SUBSÉQUENT, atteint après l'exploitation initiale (effet de rebond).",
           "short": "SI",
           "options": {
-            "Élevé (H)": { "tooltip": "Destruction ou altération majeure sur le système distant[cite: 1].", "value": "H" },
-            "Faible (L)": { "tooltip": "Modification mineure sur le système distant[cite: 1].", "value": "L" },
-            "Aucun (N)": { "tooltip": "Impact confiné à la cible initiale[cite: 1].", "value": "N" }
+            "Élevé (H)": {
+              "tooltip": "Perte totale d'intégrité, ou perte complète de protection : l'attaquant peut modifier tout ou partie critique des fichiers/données du système subséquent. Exemple : l'attaquant altère la base de données d'un système tiers relié, changeant des enregistrements critiques.",
+              "value": "H"
+            },
+            "Faible (L)": {
+              "tooltip": "Modification de données possible mais limitée ou sans conséquence grave directe ; l'attaquant ne contrôle pas précisément ce qu'il modifie. Exemple : l'attaquant modifie une donnée mineure d'un système tiers sans conséquence grave.",
+              "value": "L"
+            },
+            "Aucun (N)": {
+              "tooltip": "Aucune perte d'intégrité sur le système subséquent.",
+              "value": "N"
+            }
           },
           "selected": "N"
         },
-        "Disponibilité (SA)": {
-          "tooltip": "Panne induite sur un système distant connecté[cite: 1].",
+        "Disponibilité (Système Subséquent) (SA)": {
+          "tooltip": "Mesure l'impact sur la disponibilité d'un SYSTÈME SUBSÉQUENT, atteint après l'exploitation initiale (effet de rebond).",
           "short": "SA",
           "options": {
-            "Élevé (H)": { "tooltip": "Le système distant plante ou devient inaccessible[cite: 1].", "value": "H" },
-            "Faible (L)": { "tooltip": "Le système distant est simplement ralenti[cite: 1].", "value": "L" },
-            "Aucun (N)": { "tooltip": "Impact confiné à la cible initiale[cite: 1].", "value": "N" }
+            "Élevé (H)": {
+              "tooltip": "Perte totale de disponibilité : l'attaquant peut rendre le système subséquent totalement inaccessible, de façon prolongée ou permanente. Exemple : l'attaque sur un service vulnérable coupe l'accès à une base de données tierce dont il dépend.",
+              "value": "H"
+            },
+            "Faible (L)": {
+              "tooltip": "Performance réduite ou interruptions ponctuelles, sans déni de service complet et durable. Exemple : l'attaque provoque un léger ralentissement d'un service tiers relié, sans coupure.",
+              "value": "L"
+            },
+            "Aucun (N)": {
+              "tooltip": "Aucun impact sur la disponibilité du système subséquent.",
+              "value": "N"
+            }
           },
           "selected": "N"
         }
       }
     }
   },
-  "Métriques Supplémentaires (Le contexte de la vulnérabilité)": {
-    "fill": "L'éditeur du produit vulnérable",
+  "Métriques Supplémentaires": {
+    "fill": "le fournisseur (l'éditeur du produit vulnérable)",
     "metric_groups": {
       "": {
-        "Sécurité Physique (S)": {
-          "tooltip": "Conséquences réelles sur le matériel ou la vie humaine (ex: Environnements industriels, IoT)[cite: 1].",
+        "Sécurité Physique / Impact Humain (S)": {
+          "tooltip": "Indique si l'exploitation de la faille peut avoir des conséquences physiques réelles sur des personnes (blessure, danger de mort) lorsque le système a une fonction liée à la sécurité physique (industriel, médical, automobile…). L'absence de valeur ne signifie pas qu'il n'y a aucun risque, seulement qu'il n'a pas été évalué.",
           "short": "S",
           "options": {
-            "Non Défini (X)": { "tooltip": "Impact non évalué[cite: 1].", "value": "X" },
-            "Négligeable (N)": { "tooltip": "Conséquences uniquement logicielles[cite: 1].", "value": "N" },
-            "Présente (P)": { "tooltip": "Risque matériel ou humain[cite: 1]. Exemple : Faille permettant de prendre le contrôle d'un automate industriel ou d'un équipement médical[cite: 1].", "value": "P" }
+            "Non Défini (X)": {
+              "tooltip": "Vous ne renseignez pas cette métrique : elle n'a aucun impact sur le score final. C'est la valeur par défaut, à utiliser quand vous n'avez pas assez d'information pour choisir une autre option.",
+              "value": "X"
+            },
+            "Négligeable (N)": {
+              "tooltip": "Les conséquences correspondent à la catégorie « négligeable » de la norme IEC 61508 (aucun risque pour les personnes). Exemple : une faille sur un thermostat connecté qui n'affecte que l'affichage, sans risque physique.",
+              "value": "N"
+            },
+            "Présente (P)": {
+              "tooltip": "Les conséquences correspondent aux catégories « marginale », « critique » ou « catastrophique » de la norme IEC 61508 (un risque réel pour des personnes existe). Exemple : une faille sur un système de freinage automobile connecté ou une pompe à insuline pouvant causer une blessure.",
+              "value": "P"
+            }
           },
           "selected": "X"
         },
         "Automatisable (AU)": {
-          "tooltip": "L'exploit peut-il être scripté pour s'exécuter à grande échelle sans intervention ?[cite: 1]",
+          "tooltip": "Indique si un attaquant peut automatiser l'intégralité de la chaîne d'attaque (reconnaissance, fabrication de l'exploit, livraison, exploitation) contre de nombreuses cibles à la fois, sans intervention humaine répétée.",
           "short": "AU",
           "options": {
-            "Non Défini (X)": { "tooltip": "Non évalué[cite: 1].", "value": "X" },
-            "Non (N)": { "tooltip": "Nécessite qu'un attaquant adapte sa méthode manuellement pour chaque cible[cite: 1].", "value": "N" },
-            "Oui (Y)": { "tooltip": "Exploitation de masse possible[cite: 1]. Exemple : Ver informatique ou ransomware automatisé[cite: 1].", "value": "Y" }
+            "Non Défini (X)": {
+              "tooltip": "Vous ne renseignez pas cette métrique : elle n'a aucun impact sur le score final. C'est la valeur par défaut, à utiliser quand vous n'avez pas assez d'information pour choisir une autre option.",
+              "value": "X"
+            },
+            "Non (N)": {
+              "tooltip": "L'attaquant ne peut pas automatiser de façon fiable les 4 étapes de la chaîne d'attaque (reconnaissance, fabrication, livraison, exploitation) contre de multiples cibles. Exemple : chaque cible nécessite une reconnaissance manuelle et une adaptation spécifique de l'exploit.",
+              "value": "N"
+            },
+            "Oui (Y)": {
+              "tooltip": "L'attaquant peut automatiser entièrement l'attaque contre de nombreuses cibles sans intervention humaine (la faille est « vermisable »/wormable). Exemple : un ver qui scanne Internet et compromet automatiquement chaque serveur vulnérable trouvé, comme WannaCry.",
+              "value": "Y"
+            }
           },
           "selected": "X"
         },
         "Récupération (R)": {
-          "tooltip": "L'effort nécessaire pour remettre le service en production après l'attaque[cite: 1].",
+          "tooltip": "Décrit la capacité du système à retrouver son fonctionnement normal après une attaque réussie : automatiquement, après une action manuelle, ou jamais.",
           "short": "R",
           "options": {
-            "Non Défini (X)": { "tooltip": "Non évalué[cite: 1].", "value": "X" },
-            "Automatique (A)": { "tooltip": "Le système a une résilience intégrée et redémarre seul[cite: 1].", "value": "A" },
-            "Utilisateur (U)": { "tooltip": "Nécessite une action technique[cite: 1]. Exemple : Un technicien ou ingénieur doit redémarrer manuellement l'équipement[cite: 1].", "value": "U" },
-            "Irrécupérable (I)": { "tooltip": "Altération permanente[cite: 1]. Exemple : Firmware corrompu, équipement à remplacer[cite: 1].", "value": "I" }
+            "Non Défini (X)": {
+              "tooltip": "Vous ne renseignez pas cette métrique : elle n'a aucun impact sur le score final. C'est la valeur par défaut, à utiliser quand vous n'avez pas assez d'information pour choisir une autre option.",
+              "value": "X"
+            },
+            "Automatique (A)": {
+              "tooltip": "Le système retrouve son fonctionnement normal tout seul après l'attaque, sans intervention humaine. Exemple : un service qui redémarre automatiquement après un crash provoqué par l'exploit.",
+              "value": "A"
+            },
+            "Utilisateur (U)": {
+              "tooltip": "Il faut une intervention manuelle (redémarrage, réinitialisation) pour rétablir le service après l'attaque. Exemple : un administrateur doit relancer le service manuellement après le crash.",
+              "value": "U"
+            },
+            "Irrécupérable (I)": {
+              "tooltip": "Le service ne peut plus être rétabli par l'utilisateur après l'attaque. Exemple : l'attaque corrompt irrémédiablement le firmware d'un appareil, qui doit être remplacé.",
+              "value": "I"
+            }
           },
           "selected": "X"
         },
         "Densité de Valeur (V)": {
-          "tooltip": "La concentration des ressources compromises en une seule attaque[cite: 1].",
+          "tooltip": "Décrit la quantité de ressources (comptes, données, systèmes) qu'un attaquant obtient en exploitant une seule instance de la faille : est-ce ciblé et limité, ou massif et centralisé ?",
           "short": "V",
           "options": {
-            "Non Défini (X)": { "tooltip": "Non évalué[cite: 1].", "value": "X" },
-            "Diffuse (D)": { "tooltip": "Cible isolée[cite: 1]. Exemple : L'attaque ne compromet qu'un seul poste utilisateur[cite: 1].", "value": "D" },
-            "Concentrée (C)": { "tooltip": "Cible centrale[cite: 1]. Exemple : Compromission d'un serveur Active Directory donnant accès à l'ensemble du parc[cite: 1].", "value": "C" }
+            "Non Défini (X)": {
+              "tooltip": "Vous ne renseignez pas cette métrique : elle n'a aucun impact sur le score final. C'est la valeur par défaut, à utiliser quand vous n'avez pas assez d'information pour choisir une autre option.",
+              "value": "X"
+            },
+            "Diffuse (D)": {
+              "tooltip": "Le système compromis ne donne accès qu'à des ressources limitées lors d'une seule exploitation. Exemple : exploiter la messagerie d'un seul employé ne donne accès qu'à sa boîte mail à lui.",
+              "value": "D"
+            },
+            "Concentrée (C)": {
+              "tooltip": "Le système compromis est riche en ressources, généralement géré par des administrateurs système plutôt que par de simples utilisateurs. Exemple : compromettre le serveur de messagerie central donne accès à TOUS les emails de l'organisation.",
+              "value": "C"
+            }
           },
           "selected": "X"
         },
         "Effort de Réponse à la Vulnérabilité (RE)": {
-          "tooltip": "Complexité de l'application du correctif en production[cite: 1].",
+          "tooltip": "Évalue l'effort que devra fournir l'organisation qui utilise le produit pour répondre à la vulnérabilité (contournement simple vs remplacement matériel complexe).",
           "short": "RE",
           "options": {
-            "Non Défini (X)": { "tooltip": "Non évalué[cite: 1].", "value": "X" },
-            "Faible (L)": { "tooltip": "Contournement simple[cite: 1]. Exemple : Ajouter une règle au pare-feu[cite: 1].", "value": "L" },
-            "Modéré (M)": { "tooltip": "Mise à jour standard sans gros impact de production[cite: 1].", "value": "M" },
-            "Élevé (H)": { "tooltip": "Intervention complexe[cite: 1]. Exemple : Flasher un microcode ou arrêt planifié d'une installation[cite: 1].", "value": "H" }
+            "Non Défini (X)": {
+              "tooltip": "Vous ne renseignez pas cette métrique : elle n'a aucun impact sur le score final. C'est la valeur par défaut, à utiliser quand vous n'avez pas assez d'information pour choisir une autre option.",
+              "value": "X"
+            },
+            "Faible (L)": {
+              "tooltip": "La réponse est simple/triviale : documentation, contournement de configuration, ou conseil du fournisseur ne nécessitant pas de mise à jour immédiate. Exemple : ajouter une règle de pare-feu pour bloquer le port concerné.",
+              "value": "L"
+            },
+            "Modéré (M)": {
+              "tooltip": "La réponse demande un effort modéré et peut avoir un léger impact de service. Exemple : appliquer une mise à jour à distance ou désactiver temporairement un sous-système.",
+              "value": "M"
+            },
+            "Élevé (H)": {
+              "tooltip": "La réponse est significative et/ou difficile, pouvant nécessiter un arrêt de service planifié, voire un remplacement physique du matériel. Exemple : une mise à jour de microcode/BIOS UEFI nécessitant une analyse d'impact avant déploiement, ou un remplacement de disque défectueux.",
+              "value": "H"
+            }
           },
           "selected": "X"
         },
         "Urgence du Fournisseur (U)": {
-          "tooltip": "L'urgence du correctif selon l'éditeur[cite: 1].",
+          "tooltip": "Permet à un fournisseur de communiquer, en plus du score, son propre niveau d'urgence recommandé pour traiter la vulnérabilité.",
           "short": "U",
           "options": {
-            "Non Défini (X)": { "tooltip": "Non évalué[cite: 1].", "value": "X" },
-            "Clear": { "tooltip": "Informatif, aucune urgence[cite: 1].", "value": "Clear" },
-            "Green": { "tooltip": "Urgence faible (patch de routine)[cite: 1].", "value": "Green" },
-            "Amber": { "tooltip": "Urgence modérée[cite: 1].", "value": "Amber" },
-            "Red": { "tooltip": "Critique. Déploiement immédiat recommandé[cite: 1].", "value": "Red" }
+            "Non Défini (X)": {
+              "tooltip": "Vous ne renseignez pas cette métrique : elle n'a aucun impact sur le score final. C'est la valeur par défaut, à utiliser quand vous n'avez pas assez d'information pour choisir une autre option.",
+              "value": "X"
+            },
+            "Clear": {
+              "tooltip": "Le fournisseur juge que cette vulnérabilité n'a aucune urgence (purement informatif).",
+              "value": "Clear"
+            },
+            "Green": {
+              "tooltip": "Le fournisseur juge que cette vulnérabilité a une urgence réduite.",
+              "value": "Green"
+            },
+            "Amber": {
+              "tooltip": "Le fournisseur juge que cette vulnérabilité a une urgence modérée.",
+              "value": "Amber"
+            },
+            "Red": {
+              "tooltip": "Le fournisseur juge que cette vulnérabilité a l'urgence la plus élevée : à traiter en priorité.",
+              "value": "Red"
+            }
           },
           "selected": "X"
         }
       }
     }
   },
-  "Environnementales (Ajustements liés à l'infrastructure cible)": {
-    "fill": "L'organisation qui utilise l'équipement vulnérable",
+  "Environnementales (Métriques de Base Modifiées)": {
+    "fill": "le consommateur (l'organisation qui utilise le produit vulnérable)",
     "metric_groups": {
-      "Surcharge des Métriques de Base": {
-        "Info_Surcharge": {
-          "tooltip": "Les options commençant par 'M' (MAV, MAC, etc.) permettent de remplacer la note théorique de l'éditeur par la réalité de votre infrastructure. Exemple : Si une faille est 'Réseau (N)' en théorie, mais que votre serveur est débranché d'Internet, vous passez le MAV en 'Adjacent (A)' ou 'Local (L)'. Si les conditions standards s'appliquent, laissez sur 'Non Défini (X)'[cite: 1].",
-          "short": "INFO",
+      "Métriques d'Exploitabilité": {
+        "Vecteur d'Attaque (Modifié) (MAV)": {
+          "tooltip": "Cette métrique vous permet de SURCHARGER, pour votre environnement spécifique, la métrique de base correspondante. Laissez « Non Définie » si la valeur de base s'applique telle quelle. Indique comment l'attaquant doit s'y prendre, d'un point de vue réseau, pour atteindre le système vulnérable. Plus l'attaquant peut être « loin » (logiquement ou physiquement) du système pour l'exploiter, plus la sévérité est élevée : le nombre d'attaquants potentiels est bien plus grand pour une faille accessible depuis Internet que pour une faille nécessitant un accès physique à la machine.",
+          "short": "MAV",
           "options": {
-            "Non Défini (X)": { "tooltip": "Conserve le score de base[cite: 1].", "value": "X" }
+            "Non Défini (X)": {
+              "tooltip": "Vous n'appliquez aucune surcharge : le score utilisera automatiquement la valeur de la métrique de Base correspondante. Choisissez une autre option seulement si votre environnement réel diffère de l'hypothèse par défaut.",
+              "value": "X"
+            },
+            "Réseau (N)": {
+              "tooltip": "Le système est atteignable depuis le réseau, potentiellement depuis tout Internet. C'est le cas le plus grave car le nombre d'attaquants possibles est illimité. Exemple : une faille dans une application web accessible publiquement, exploitable simplement en envoyant une requête HTTP depuis n'importe où dans le monde.",
+              "value": "N"
+            },
+            "Adjacent (A)": {
+              "tooltip": "L'attaque nécessite d'être sur le même réseau logique ou à proximité physique immédiate (Wi-Fi, Bluetooth, NFC, sous-réseau local, VPN interne). Exemple : une faille dans un routeur domestique exploitable uniquement par un appareil déjà connecté au même Wi-Fi.",
+              "value": "A"
+            },
+            "Local (L)": {
+              "tooltip": "L'attaquant doit avoir un accès local à la machine (clavier, console, SSH) ou faire agir un utilisateur légitime pour lui (ingénierie sociale). Exemple : une faille d'élévation de privilèges qui nécessite d'être déjà connecté en SSH sur le serveur, ou un fichier piégé que la victime doit ouvrir elle-même.",
+              "value": "L"
+            },
+            "Physique (P)": {
+              "tooltip": "L'attaquant doit toucher ou manipuler physiquement l'appareil (brancher une clé USB, ouvrir le boîtier). Exemple : une attaque de type « evil maid » où quelqu'un doit brancher un câble sur le port de debug d'un distributeur automatique.",
+              "value": "P"
+            }
+          },
+          "selected": "X"
+        },
+        "Complexité de l'Attaque (Modifiée) (MAC)": {
+          "tooltip": "Cette métrique vous permet de SURCHARGER, pour votre environnement spécifique, la métrique de base correspondante. Laissez « Non Définie » si la valeur de base s'applique telle quelle. Mesure les actions techniques que l'attaquant doit accomplir pour contourner des protections déjà en place (ASLR, DEP, etc.) avant de pouvoir exploiter la faille de façon fiable. Ne prend en compte que les conditions liées aux mécanismes de sécurité, pas les conditions de déploiement (voir Exigences de l'Attaque).",
+          "short": "MAC",
+          "options": {
+            "Non Défini (X)": {
+              "tooltip": "Vous n'appliquez aucune surcharge : le score utilisera automatiquement la valeur de la métrique de Base correspondante. Choisissez une autre option seulement si votre environnement réel diffère de l'hypothèse par défaut.",
+              "value": "X"
+            },
+            "Faible (L)": {
+              "tooltip": "Aucune action particulière n'est nécessaire pour contourner une protection : l'attaque fonctionne à chaque tentative, sans préparation spécifique à la cible. Exemple : envoyer une requête malformée qui déclenche systématiquement un dépassement de tampon (buffer overflow), sans avoir besoin de connaître de secret propre à la cible.",
+              "value": "L"
+            },
+            "Élevée (H)": {
+              "tooltip": "L'attaquant doit d'abord contourner une protection active (ASLR, DEP…) ou obtenir un secret propre à la cible (clé, token) avant que l'attaque ne fonctionne, ce qui la rend moins fiable et plus longue à préparer. Exemple : devoir d'abord deviner l'adresse mémoire d'une fonction protégée par ASLR avant de pouvoir déclencher l'exploitation.",
+              "value": "H"
+            }
+          },
+          "selected": "X"
+        },
+        "Exigences de l'Attaque (Modifiées) (MAT)": {
+          "tooltip": "Cette métrique vous permet de SURCHARGER, pour votre environnement spécifique, la métrique de base correspondante. Laissez « Non Définie » si la valeur de base s'applique telle quelle. Mesure les conditions de déploiement ou d'exécution du système cible qui doivent être réunies pour que l'attaque fonctionne, indépendamment de toute mesure de sécurité (par exemple, gagner une condition de concurrence, ou devoir être positionné sur le chemin réseau entre la victime et sa cible).",
+          "short": "MAT",
+          "options": {
+            "Non Défini (X)": {
+              "tooltip": "Vous n'appliquez aucune surcharge : le score utilisera automatiquement la valeur de la métrique de Base correspondante. Choisissez une autre option seulement si votre environnement réel diffère de l'hypothèse par défaut.",
+              "value": "X"
+            },
+            "Aucune (N)": {
+              "tooltip": "L'attaque fonctionne dans (presque) toutes les conditions de déploiement, sans dépendre d'un concours de circonstances. Exemple : une faille d'injection SQL exploitable à chaque requête envoyée au formulaire de connexion.",
+              "value": "N"
+            },
+            "Présente (P)": {
+              "tooltip": "L'attaque ne réussit que si des conditions particulières, indépendantes de toute mesure de sécurité, sont réunies : gagner une race condition, ou être positionné en interception sur le chemin réseau (attaque de l'intercepteur / on-path). Exemple : devoir déclencher l'exploit exactement au moment où deux threads accèdent au même fichier, ce qui peut nécessiter plusieurs tentatives.",
+              "value": "P"
+            }
+          },
+          "selected": "X"
+        },
+        "Privilèges Requis (Modifiés) (MPR)": {
+          "tooltip": "Cette métrique vous permet de SURCHARGER, pour votre environnement spécifique, la métrique de base correspondante. Laissez « Non Définie » si la valeur de base s'applique telle quelle. Indique le niveau de droits (aucun, utilisateur simple, administrateur) que l'attaquant doit déjà posséder sur le système avant de pouvoir exploiter la faille.",
+          "short": "MPR",
+          "options": {
+            "Non Défini (X)": {
+              "tooltip": "Vous n'appliquez aucune surcharge : le score utilisera automatiquement la valeur de la métrique de Base correspondante. Choisissez une autre option seulement si votre environnement réel diffère de l'hypothèse par défaut.",
+              "value": "X"
+            },
+            "Aucun (N)": {
+              "tooltip": "L'attaquant n'a besoin d'aucun compte ni d'aucune autorisation préalable sur le système. Exemple : un visiteur anonyme d'un site web peut exploiter la faille sans se connecter.",
+              "value": "N"
+            },
+            "Faible (L)": {
+              "tooltip": "L'attaquant a besoin d'un compte basique, avec des droits limités à ses propres ressources. Exemple : un utilisateur standard, sans droit d'administration, peut déclencher la faille depuis son propre espace personnel.",
+              "value": "L"
+            },
+            "Élevé (H)": {
+              "tooltip": "L'attaquant doit déjà posséder des droits significatifs, proches de l'administration, donnant un accès étendu au système. Exemple : seul un compte administrateur du panneau d'administration peut déclencher la faille.",
+              "value": "H"
+            }
+          },
+          "selected": "X"
+        },
+        "Interaction Utilisateur (Modifiée) (MUI)": {
+          "tooltip": "Cette métrique vous permet de SURCHARGER, pour votre environnement spécifique, la métrique de base correspondante. Laissez « Non Définie » si la valeur de base s'applique telle quelle. Indique si une personne autre que l'attaquant (la victime) doit interagir avec le système pour que l'exploitation réussisse (par exemple ouvrir une pièce jointe, cliquer un lien).",
+          "short": "MUI",
+          "options": {
+            "Non Défini (X)": {
+              "tooltip": "Vous n'appliquez aucune surcharge : le score utilisera automatiquement la valeur de la métrique de Base correspondante. Choisissez une autre option seulement si votre environnement réel diffère de l'hypothèse par défaut.",
+              "value": "X"
+            },
+            "Aucune (N)": {
+              "tooltip": "L'exploitation ne demande aucune action de la part d'un utilisateur autre que l'attaquant. Exemple : un ver qui se propage tout seul entre serveurs sans qu'aucun humain n'ait besoin de cliquer sur quoi que ce soit.",
+              "value": "N"
+            },
+            "Passive (P)": {
+              "tooltip": "La victime doit interagir de façon minime et involontaire avec le système ou la charge malveillante, sans avoir besoin de contourner activement une protection. Exemple : la victime consulte simplement une page web piégée, sans cliquer sur rien de spécial, pour déclencher un script malveillant.",
+              "value": "P"
+            },
+            "Active (A)": {
+              "tooltip": "La victime doit accomplir une action consciente et spécifique pour que l'attaque fonctionne. Exemple : la victime doit télécharger puis ouvrir volontairement une pièce jointe Office piégée et activer les macros.",
+              "value": "A"
+            }
           },
           "selected": "X"
         }
       },
-      "Exigences de Sécurité Locales": {
-        "Exigence de Confidentialité (CR)": {
-          "tooltip": "Criticité de la confidentialité sur cet équipement spécifique[cite: 1].",
-          "short": "CR",
+      "Métriques d'Impact sur le Système Vulnérable": {
+        "Confidentialité Système Vulnérable (Modifiée) (MVC)": {
+          "tooltip": "Cette métrique vous permet de SURCHARGER, pour votre environnement spécifique, la métrique de base correspondante. Laissez « Non Définie » si la valeur de base s'applique telle quelle. Mesure l'impact sur la confidentialité des informations du SYSTÈME VULNÉRABLE lui-même (celui qui contient la faille), c'est-à-dire la capacité de l'attaquant à lire des données auxquelles il ne devrait pas avoir accès.",
+          "short": "MVC",
           "options": {
-            "Non Défini (X)": { "tooltip": "Non évalué[cite: 1].", "value": "X" },
-            "Élevé (H)": { "tooltip": "Impact catastrophique (ex: serveur de base de données de production)[cite: 1].", "value": "H" },
-            "Moyen (M)": { "tooltip": "Impact sérieux (ex: serveur intranet interne)[cite: 1].", "value": "M" },
-            "Faible (L)": { "tooltip": "Impact limité (ex: environnement de test)[cite: 1].", "value": "L" }
+            "Non Défini (X)": {
+              "tooltip": "Vous n'appliquez aucune surcharge : le score utilisera automatiquement la valeur de la métrique de Base correspondante. Choisissez une autre option seulement si votre environnement réel diffère de l'hypothèse par défaut.",
+              "value": "X"
+            },
+            "Élevé (H)": {
+              "tooltip": "Perte totale de confidentialité : l'attaquant récupère toutes les données du système vulnérable, ou récupère des données restreintes mais dont la divulgation a un impact direct et grave. Exemple : l'attaquant récupère le mot de passe administrateur ou la clé privée du serveur web.",
+              "value": "H"
+            },
+            "Faible (L)": {
+              "tooltip": "Perte partielle et limitée de confidentialité : l'attaquant obtient un accès à certaines informations restreintes, mais sans contrôle sur ce qu'il obtient ni impact grave direct. Exemple : l'attaquant peut lire les en-têtes de version d'un logiciel, sans accéder à des données sensibles.",
+              "value": "L"
+            },
+            "Aucun (N)": {
+              "tooltip": "Aucune perte de confidentialité sur le système vulnérable.",
+              "value": "N"
+            }
           },
           "selected": "X"
         },
-        "Exigence d'Intégrité (IR)": {
-          "tooltip": "Criticité de l'intégrité sur cet équipement spécifique[cite: 1].",
-          "short": "IR",
+        "Intégrité Système Vulnérable (Modifiée) (MVI)": {
+          "tooltip": "Cette métrique vous permet de SURCHARGER, pour votre environnement spécifique, la métrique de base correspondante. Laissez « Non Définie » si la valeur de base s'applique telle quelle. Mesure l'impact sur l'intégrité des données du SYSTÈME VULNÉRABLE, c'est-à-dire la capacité de l'attaquant à modifier des données ou du code sans autorisation.",
+          "short": "MVI",
           "options": {
-            "Non Défini (X)": { "tooltip": "Non évalué[cite: 1].", "value": "X" },
-            "Élevé (H)": { "tooltip": "Impact catastrophique (ex: modification de logs d'audit légaux ou configurations réseau)[cite: 1].", "value": "H" },
-            "Moyen (M)": { "tooltip": "Impact sérieux[cite: 1].", "value": "M" },
-            "Faible (L)": { "tooltip": "Impact limité[cite: 1].", "value": "L" }
+            "Non Défini (X)": {
+              "tooltip": "Vous n'appliquez aucune surcharge : le score utilisera automatiquement la valeur de la métrique de Base correspondante. Choisissez une autre option seulement si votre environnement réel diffère de l'hypothèse par défaut.",
+              "value": "X"
+            },
+            "Élevé (H)": {
+              "tooltip": "Perte totale d'intégrité, ou perte complète de protection : l'attaquant peut modifier tout ou partie critique des fichiers/données du système vulnérable. Exemple : l'attaquant modifie n'importe quel fichier protégé par l'application, y compris les fichiers système.",
+              "value": "H"
+            },
+            "Faible (L)": {
+              "tooltip": "Modification de données possible mais limitée ou sans conséquence grave directe ; l'attaquant ne contrôle pas précisément ce qu'il modifie. Exemple : l'attaquant peut modifier un champ de commentaire public sans autre conséquence.",
+              "value": "L"
+            },
+            "Aucun (N)": {
+              "tooltip": "Aucune perte d'intégrité sur le système vulnérable.",
+              "value": "N"
+            }
           },
           "selected": "X"
         },
-        "Exigence de Disponibilité (AR)": {
-          "tooltip": "Criticité de la disponibilité sur cet équipement spécifique[cite: 1].",
-          "short": "AR",
+        "Disponibilité Système Vulnérable (Modifiée) (MVA)": {
+          "tooltip": "Cette métrique vous permet de SURCHARGER, pour votre environnement spécifique, la métrique de base correspondante. Laissez « Non Définie » si la valeur de base s'applique telle quelle. Mesure l'impact sur la disponibilité du SYSTÈME VULNÉRABLE, c'est-à-dire la capacité de l'attaquant à ralentir, interrompre ou rendre inutilisable le système ou ses ressources (bande passante, CPU, disque…).",
+          "short": "MVA",
           "options": {
-            "Non Défini (X)": { "tooltip": "Non évalué[cite: 1].", "value": "X" },
-            "Élevé (H)": { "tooltip": "Impact catastrophique (ex: système de production tournant en 24/7)[cite: 1].", "value": "H" },
-            "Moyen (M)": { "tooltip": "Impact sérieux (tolérance d'arrêt de quelques heures)[cite: 1].", "value": "M" },
-            "Faible (L)": { "tooltip": "Impact limité (tolérance d'arrêt prolongée)[cite: 1].", "value": "L" }
+            "Non Défini (X)": {
+              "tooltip": "Vous n'appliquez aucune surcharge : le score utilisera automatiquement la valeur de la métrique de Base correspondante. Choisissez une autre option seulement si votre environnement réel diffère de l'hypothèse par défaut.",
+              "value": "X"
+            },
+            "Élevé (H)": {
+              "tooltip": "Perte totale de disponibilité : l'attaquant peut rendre le système vulnérable totalement inaccessible, de façon prolongée ou permanente. Exemple : l'attaquant fait planter le serveur avec une seule requête, nécessitant un redémarrage manuel.",
+              "value": "H"
+            },
+            "Faible (L)": {
+              "tooltip": "Performance réduite ou interruptions ponctuelles, sans déni de service complet et durable. Exemple : l'attaquant ralentit légèrement les réponses du serveur sans l'indisponibiliser.",
+              "value": "L"
+            },
+            "Aucun (N)": {
+              "tooltip": "Aucun impact sur la disponibilité du système vulnérable.",
+              "value": "N"
+            }
+          },
+          "selected": "X"
+        }
+      },
+      "Métriques d'Impact sur le Système Subséquent": {
+        "Confidentialité Système Subséquent (Modifiée) (MSC)": {
+          "tooltip": "Cette métrique vous permet de SURCHARGER, pour votre environnement spécifique, la métrique de base correspondante. Laissez « Non Définie » si la valeur de base s'applique telle quelle. Mesure l'impact sur la confidentialité d'un SYSTÈME SUBSÉQUENT (un autre système, différent du système vulnérable, atteint via un effet de rebond après l'exploitation).",
+          "short": "MSC",
+          "options": {
+            "Non Défini (X)": {
+              "tooltip": "Vous n'appliquez aucune surcharge : le score utilisera automatiquement la valeur de la métrique de Base correspondante. Choisissez une autre option seulement si votre environnement réel diffère de l'hypothèse par défaut.",
+              "value": "X"
+            },
+            "": {},
+            "Élevé (H)": {
+              "tooltip": "Perte totale de confidentialité : l'attaquant récupère toutes les données du système subséquent, ou récupère des données restreintes mais dont la divulgation a un impact direct et grave. Exemple : l'attaquant, après avoir compromis un objet connecté, récupère les identifiants du serveur cloud auquel il est relié.",
+              "value": "H"
+            },
+            "Faible (L)": {
+              "tooltip": "Perte partielle et limitée de confidentialité : l'attaquant obtient un accès à certaines informations restreintes, mais sans contrôle sur ce qu'il obtient ni impact grave direct. Exemple : l'attaquant obtient des métadonnées peu sensibles d'un système tiers relié au système vulnérable.",
+              "value": "L"
+            },
+            "Aucun (N)": {
+              "tooltip": "Aucune perte de confidentialité sur le système subséquent.",
+              "value": "N"
+            }
+          },
+          "selected": "X"
+        },
+        "Intégrité Système Subséquent (Modifiée) (MSI)": {
+          "tooltip": "Cette métrique vous permet de SURCHARGER, pour votre environnement spécifique, la métrique de base correspondante. Laissez « Non Définie » si la valeur de base s'applique telle quelle. Mesure l'impact sur l'intégrité d'un SYSTÈME SUBSÉQUENT, atteint après l'exploitation initiale (effet de rebond).",
+          "short": "MSI",
+          "options": {
+            "Non Défini (X)": {
+              "tooltip": "Vous n'appliquez aucune surcharge : le score utilisera automatiquement la valeur de la métrique de Base correspondante. Choisissez une autre option seulement si votre environnement réel diffère de l'hypothèse par défaut.",
+              "value": "X"
+            },
+            "Sécurité (S)": {
+              "tooltip": "L'exploitation entraînerait un impact pouvant causer une blessure grave ou pire (catégories « marginale » ou plus grave selon IEC 61508) à une personne. Exemple : un impact sur l'intégrité ou la disponibilité d'un système subséquent de type dispositif médical connecté, mettant en danger un patient.",
+              "value": "S"
+            },
+            "Élevé (H)": {
+              "tooltip": "Perte totale d'intégrité, ou perte complète de protection : l'attaquant peut modifier tout ou partie critique des fichiers/données du système subséquent. Exemple : l'attaquant altère la base de données d'un système tiers relié, changeant des enregistrements critiques.",
+              "value": "H"
+            },
+            "Faible (L)": {
+              "tooltip": "Modification de données possible mais limitée ou sans conséquence grave directe ; l'attaquant ne contrôle pas précisément ce qu'il modifie. Exemple : l'attaquant modifie une donnée mineure d'un système tiers sans conséquence grave.",
+              "value": "L"
+            },
+            "Aucun (N)": {
+              "tooltip": "Aucune perte d'intégrité sur le système subséquent.",
+              "value": "N"
+            }
+          },
+          "selected": "X"
+        },
+        "Disponibilité Système Subséquent (Modifiée) (MSA)": {
+          "tooltip": "Cette métrique vous permet de SURCHARGER, pour votre environnement spécifique, la métrique de base correspondante. Laissez « Non Définie » si la valeur de base s'applique telle quelle. Mesure l'impact sur la disponibilité d'un SYSTÈME SUBSÉQUENT, atteint après l'exploitation initiale (effet de rebond).",
+          "short": "MSA",
+          "options": {
+            "Non Défini (X)": {
+              "tooltip": "Vous n'appliquez aucune surcharge : le score utilisera automatiquement la valeur de la métrique de Base correspondante. Choisissez une autre option seulement si votre environnement réel diffère de l'hypothèse par défaut.",
+              "value": "X"
+            },
+            "Sécurité (S)": {
+              "tooltip": "L'exploitation entraînerait un impact pouvant causer une blessure grave ou pire (catégories « marginale » ou plus grave selon IEC 61508) à une personne. Exemple : un impact sur l'intégrité ou la disponibilité d'un système subséquent de type dispositif médical connecté, mettant en danger un patient.",
+              "value": "S"
+            },
+            "Élevé (H)": {
+              "tooltip": "Perte totale de disponibilité : l'attaquant peut rendre le système subséquent totalement inaccessible, de façon prolongée ou permanente. Exemple : l'attaque sur un service vulnérable coupe l'accès à une base de données tierce dont il dépend.",
+              "value": "H"
+            },
+            "Faible (L)": {
+              "tooltip": "Performance réduite ou interruptions ponctuelles, sans déni de service complet et durable. Exemple : l'attaque provoque un léger ralentissement d'un service tiers relié, sans coupure.",
+              "value": "L"
+            },
+            "Aucun (N)": {
+              "tooltip": "Aucun impact sur la disponibilité du système subséquent.",
+              "value": "N"
+            }
           },
           "selected": "X"
         }
       }
     }
   },
-  "Métriques de Menace (Renseignement sur les menaces / Threat Intel)": {
-    "fill": "L'organisation",
+  "Environnementales (Exigences de Sécurité)": {
+    "fill": "le consommateur (l'organisation qui utilise le produit vulnérable)",
+    "metric_groups": {
+      "": {
+        "Exigence de Confidentialité (CR)": {
+          "tooltip": "Permet d'ajuster le score selon l'importance de la confidentialité pour l'actif concerné dans VOTRE organisation (un serveur RH n'a pas la même importance qu'un serveur de test).",
+          "short": "CR",
+          "options": {
+            "Non Défini (X)": {
+              "tooltip": "Vous ne renseignez pas cette métrique : elle n'a aucun impact sur le score final. C'est la valeur par défaut, à utiliser quand vous n'avez pas assez d'information pour choisir une autre option.",
+              "value": "X"
+            },
+            "Élevé (H)": {
+              "tooltip": "Une perte de confidentialité sur cet actif aurait un effet CATASTROPHIQUE pour votre organisation. Exemple : il s'agit du serveur de production principal, vital pour l'activité.",
+              "value": "H"
+            },
+            "Moyen (M)": {
+              "tooltip": "Une perte de confidentialité sur cet actif aurait un effet SÉRIEUX (mais pas catastrophique) pour votre organisation. Exemple : un serveur secondaire important mais avec des solutions de secours.",
+              "value": "M"
+            },
+            "Faible (L)": {
+              "tooltip": "Une perte de confidentialité sur cet actif n'aurait qu'un effet LIMITÉ pour votre organisation. Exemple : un environnement de test ou de développement sans donnée réelle.",
+              "value": "L"
+            }
+          },
+          "selected": "X"
+        },
+        "Exigence d'Intégrité (IR)": {
+          "tooltip": "Permet d'ajuster le score selon l'importance de l'intégrité des données pour l'actif concerné dans VOTRE organisation.",
+          "short": "IR",
+          "options": {
+            "Non Défini (X)": {
+              "tooltip": "Vous ne renseignez pas cette métrique : elle n'a aucun impact sur le score final. C'est la valeur par défaut, à utiliser quand vous n'avez pas assez d'information pour choisir une autre option.",
+              "value": "X"
+            },
+            "Élevé (H)": {
+              "tooltip": "Une perte de intégrité sur cet actif aurait un effet CATASTROPHIQUE pour votre organisation. Exemple : il s'agit du serveur de production principal, vital pour l'activité.",
+              "value": "H"
+            },
+            "Moyen (M)": {
+              "tooltip": "Une perte de intégrité sur cet actif aurait un effet SÉRIEUX (mais pas catastrophique) pour votre organisation. Exemple : un serveur secondaire important mais avec des solutions de secours.",
+              "value": "M"
+            },
+            "Faible (L)": {
+              "tooltip": "Une perte de intégrité sur cet actif n'aurait qu'un effet LIMITÉ pour votre organisation. Exemple : un environnement de test ou de développement sans donnée réelle.",
+              "value": "L"
+            }
+          },
+          "selected": "X"
+        },
+        "Exigence de Disponibilité (AR)": {
+          "tooltip": "Permet d'ajuster le score selon l'importance de la disponibilité de l'actif concerné dans VOTRE organisation (un système de production 24/7 vs un environnement de développement).",
+          "short": "AR",
+          "options": {
+            "Non Défini (X)": {
+              "tooltip": "Vous ne renseignez pas cette métrique : elle n'a aucun impact sur le score final. C'est la valeur par défaut, à utiliser quand vous n'avez pas assez d'information pour choisir une autre option.",
+              "value": "X"
+            },
+            "Élevé (H)": {
+              "tooltip": "Une perte de disponibilité sur cet actif aurait un effet CATASTROPHIQUE pour votre organisation. Exemple : il s'agit du serveur de production principal, vital pour l'activité.",
+              "value": "H"
+            },
+            "Moyen (M)": {
+              "tooltip": "Une perte de disponibilité sur cet actif aurait un effet SÉRIEUX (mais pas catastrophique) pour votre organisation. Exemple : un serveur secondaire important mais avec des solutions de secours.",
+              "value": "M"
+            },
+            "Faible (L)": {
+              "tooltip": "Une perte de disponibilité sur cet actif n'aurait qu'un effet LIMITÉ pour votre organisation. Exemple : un environnement de test ou de développement sans donnée réelle.",
+              "value": "L"
+            }
+          },
+          "selected": "X"
+        }
+      }
+    }
+  },
+  "Métriques de Menace": {
+    "fill": "le consommateur (l'organisation qui utilise le produit vulnérable)",
     "metric_groups": {
       "": {
         "Maturité de l'Exploit (E)": {
-          "tooltip": "L'état d'exploitation de cette faille dans la nature ('in-the-wild')[cite: 1].",
+          "tooltip": "Mesure la probabilité réelle que la vulnérabilité soit exploitée, en fonction de ce qui est observé « dans la nature » : code d'exploitation public, attaques déjà recensées, etc.",
           "short": "E",
           "options": {
-            "Non Défini (X)": { "tooltip": "Non évalué[cite: 1].", "value": "X" },
-            "Attaquée (A)": { "tooltip": "Des campagnes d'attaques actives l'utilisent actuellement (ex: botnets, groupes de ransomwares)[cite: 1].", "value": "A" },
-            "PoC (P)": { "tooltip": "Un code d'exploitation (Preuve de Concept) est disponible publiquement (ex: sur GitHub) mais peu d'attaques massives sont recensées[cite: 1].", "value": "P" },
-            "Non signalée (U)": { "tooltip": "Vulnérabilité théorique ou venant d'être patchée. Aucun exploit public n'est connu[cite: 1].", "value": "U" }
+            "Non Défini (X)": {
+              "tooltip": "Vous ne renseignez pas cette métrique : elle n'a aucun impact sur le score final. C'est la valeur par défaut, à utiliser quand vous n'avez pas assez d'information pour choisir une autre option.",
+              "value": "X"
+            },
+            "Attaquée (A)": {
+              "tooltip": "Des attaques réelles (réussies ou tentées) ciblant cette faille ont été signalées, OU des outils facilitant l'exploitation sont disponibles publiquement ou en privé. Exemple : la faille est activement exploitée par des rançongiciels, comme cela a été observé pour Log4Shell peu après sa divulgation.",
+              "value": "A"
+            },
+            "PoC (P)": {
+              "tooltip": "Un code de preuve de concept (PoC) est disponible publiquement, mais aucune attaque réelle n'est connue à ce jour et aucun outil facilitant l'exploitation n'est disponible. Exemple : un chercheur a publié un exploit sur GitHub à but de démonstration, sans exploitation observée sur le terrain.",
+              "value": "P"
+            },
+            "Non signalée (U)": {
+              "tooltip": "Aucun PoC public connu, aucune attaque signalée, aucun outil d'exploitation connu. Exemple : la faille vient d'être publiée par le fournisseur, sans aucun détail technique ni exploit disponible.",
+              "value": "U"
+            }
           },
           "selected": "X"
         }
